@@ -6,7 +6,7 @@ Rohling T, Mack J, Schulz D. A fast histogram-based similarity measure for detec
 
 Our own data in YuQuan Campus, from Velodyen VLP16.
 
-https://github.com/ZJUYH/laserScan_Similarity/raw/master/Campus.png
+![image] https://github.com/ZJUYH/laserScan_Similarity/raw/master/Campus.png
 
 ##Thanks:
 
