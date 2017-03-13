@@ -1,0 +1,11 @@
+<launch>
+
+  <node pkg="laserScan_Similarity" type="laserScan_Similarity" name="laserScan_Similarity" output="screen" >
+
+    <param name="scan_vtk" value="$(find laserScan_Similarity)/data/test/"/>
+    <param name="sectionNum" value="30"/>
+    <param name="isLog" value="true"/>
+    <param name="truncatedStart" value="0"/>
+
+  </node>
+</launch>

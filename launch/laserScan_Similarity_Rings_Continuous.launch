@@ -1,0 +1,13 @@
+<launch>
+
+  <node pkg="laserScan_Similarity" type="laserScan_Similarity_Rings_Continuous" name="laserScan_Similarity_Rings_Continuous" output="screen" >
+
+    <param name="sectionNum" value="20"/>
+    <param name="isLog" value="false"/>
+    <param name="truncatedStart" value="0"/>
+    <param name="inputQueueSize" value="1"/>
+    <param name="ringStart" value="0"/>
+    <param name="ringEnd" value="15"/>
+
+  </node>
+</launch>
