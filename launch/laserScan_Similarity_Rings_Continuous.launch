@@ -2,12 +2,18 @@
 
   <node pkg="laserScan_Similarity" type="laserScan_Similarity_Rings_Continuous" name="laserScan_Similarity_Rings_Continuous" output="screen" >
 
-    <param name="sectionNum" value="20"/>
-    <param name="isLog" value="false"/>
-    <param name="truncatedStart" value="0"/>
     <param name="inputQueueSize" value="1"/>
-    <param name="ringStart" value="0"/>
-    <param name="ringEnd" value="15"/>
+    <param name="rangeThreshold" value="3.0"/>
+    <param name="isVoxelFilter" value="false"/>
+    <param name="voxelFilterConfig" value="$(find laserScan_Similarity)/cfg/voxel_filter.yaml" />
+
+    <param name="sectionNumOfR" value="20"/>
+    <param name="minRange" value="3.0"/>
+    <param name="maxRange" value="100.0" />
+
+    <param name="sectionNumOfI" value="20"/>
+    <param name="minIntensity" value="0.0"/>
+    <param name="maxIntensity" value="150.0"/>
 
   </node>
 </launch>
