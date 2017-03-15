@@ -104,6 +104,8 @@ private:
     const float minIntensity;
     const float maxIntensity;
     const float durationSecond;
+    const int velodyneRings;
+    const int upStart;
 
     bool first = true;
 protected:
@@ -121,7 +123,9 @@ Similarity::Similarity(ros::NodeHandle& n):
     maxRange(getParam<float>("maxRange", 100.0)),
     minIntensity(getParam<float>("minIntensity", 0.0)),
     maxIntensity(getParam<float>("maxIntensity", 200.0)),
-    durationSecond(getParam<float>("durationSecond", 1.0))
+    durationSecond(getParam<float>("durationSecond", 1.0)),
+    upStart(getParam<int>("upStart", 0)),
+    velodyneRings(getParam<int>("velodyneRings", 16))
 {
     //load filterConfig  --->  Voxel Grid Filter, thx to Lv
     string filterConfigName;
@@ -189,7 +193,7 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
 
     int ringRow = rawScan->getDescriptorStartingRow("ring");
 
-    for(int i = 0; i < 16; i++)
+    for(int i = this->upStart; i < this->velodyneRings; i++)
     {
         //get the ring of rawScans
         DP tempScan = rawScan->createSimilarEmpty();
@@ -211,6 +215,7 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
         //Regular processing
         if(first)
         {
+            cout<< i << "  " << tempScan.features.cols()<<endl;
             scan0.pointCloud = tempScan;
             scan0 = this->processScan(scan0);
             rings0Vector.push_back(scan0);
@@ -219,7 +224,6 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
             scan1 = this->processScan(scan1);
             rings1Vector.push_back(scan1);
 
-            first = false;
         }
         else
         {
@@ -230,6 +234,9 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
 
     }
 
+    //Set it false here
+    first = false;
+
     this->getEMD1DRings();
 
     scanPointCloudPub.publish(PointMatcher_ros::pointMatcherCloudToRosMsg<float>(rings1Vector.at(0).pointCloud, "velodyne", ros::Time::now()));
@@ -238,7 +245,7 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
     rings1Vector.clear();
 
     //Duartion
-    ros::Duration(this->durationSecond).sleep();
+//    ros::Duration(this->durationSecond).sleep();
 
 }
 
@@ -283,15 +290,15 @@ scan Similarity::processScan(scan scanInput)
             scanInput.rangeOfPointVector.push_back(rangeOfPoint);
 
             ///Thanks to Tang Li's advice, ring?? #TODO
-            if(rangeOfPoint > scanInput.maxRange)
-                scanInput.maxRange = rangeOfPoint;
-            if(rangeOfPoint < scanInput.minRange)
-                scanInput.minRange = rangeOfPoint;
+//            if(rangeOfPoint > scanInput.maxRange)
+//                scanInput.maxRange = rangeOfPoint;
+//            if(rangeOfPoint < scanInput.minRange)
+//                scanInput.minRange = rangeOfPoint;
 
         }
 
-//        scanInput.minRange = this->minRange;
-//        scanInput.maxRange = this->maxRange;
+        scanInput.minRange = this->minRange;
+        scanInput.maxRange = this->maxRange;
         scanInput.sectionLength = (scanInput.maxRange - scanInput.minRange) / sectionNumOfR;
 
         for(int i = 0; i < sectionNumOfR; i++)
@@ -329,15 +336,15 @@ scan Similarity::processScan(scan scanInput)
             scanInput.intensityOfPointVector.push_back(intensityOfPoint);
 
             ///Thanks to Tang Li's advice, ring?? #TODO
-            if(intensityOfPoint > scanInput.maxIntensity)
-                scanInput.maxIntensity = intensityOfPoint;
-            if(intensityOfPoint < scanInput.minIntensity)
-                scanInput.minIntensity = intensityOfPoint;
+//            if(intensityOfPoint > scanInput.maxIntensity)
+//                scanInput.maxIntensity = intensityOfPoint;
+//            if(intensityOfPoint < scanInput.minIntensity)
+//                scanInput.minIntensity = intensityOfPoint;
 
         }
 
-//        scanInput.minIntensity = this->minIntensity;
-//        scanInput.maxIntensity = this->maxIntensity;
+        scanInput.minIntensity = this->minIntensity;
+        scanInput.maxIntensity = this->maxIntensity;
         scanInput.sectionLengthOfI = (scanInput.maxIntensity - scanInput.minIntensity) / sectionNumOfI;
 
         for(int i = 0; i < sectionNumOfI; i++)
@@ -442,16 +449,67 @@ void Similarity::getEMD1D()
 
 void Similarity::getEMD1DRings()
 {
-    for(int i = 0; i < 16; i++)
-    {
-        //for cout the information of each ring
-        cout<<"Ring:  "<<i<<"  Count:  "<<rings1Vector.at(i).pointCount
-            <<"  minRange:  "<<rings1Vector.at(i).minRange
-            <<"  maxRange:  "<<rings1Vector.at(i).maxRange
-            <<"  minIntensity:  "<<rings1Vector.at(i).minIntensity
-            <<"  maxIntensity:  "<<rings1Vector.at(i).maxIntensity<<endl;
+//    for(int i = this->upStart; i < velodyneRings; i++)
+//    {
+//        int at = i - this->upStart;
+//        //for cout the information of each ring
+//        cout<<"Ring:  "<<i<<"  Count:  "<<rings1Vector.at(at).pointCount
+//            <<"  minRange:  "<<rings1Vector.at(at).minRange
+//            <<"  maxRange:  "<<rings1Vector.at(at).maxRange
+//            <<"  minIntensity:  "<<rings1Vector.at(at).minIntensity
+//            <<"  maxIntensity:  "<<rings1Vector.at(at).maxIntensity<<endl;
 
+//    }
+
+    float EMDRangeAverage = 0;
+    for(int i = this->upStart; i < this->velodyneRings; i++)
+    {
+        int at = i - this->upStart;
+        for(int j = 0; j < sectionNumOfR; j++)
+        {
+            for(int m = 0; m <= j; m++)
+            {
+//                cout<<at<<"  "<<j<<"  "<<m<<endl;
+                EMDRangeAverage += abs(rings0Vector.at(at).sectionRatioVector.at(m) - rings1Vector.at(at).sectionRatioVector.at(m));
+            }
+        }
     }
+    EMDRangeAverage /= (sectionNumOfR + velodyneRings - upStart + 1);
+    cout<<"EMD Range Average Distance of Rings:  "<<EMDRangeAverage<<endl;
+
+    float EMDIntensityAverage = 0;
+    for(int i = this->upStart; i < this->velodyneRings; i++)
+    {
+        int at = i - this->upStart;
+        for(int j = 0; j < sectionNumOfI; j++)
+        {
+            for(int m = 0; m <= j; m++)
+            {
+                EMDIntensityAverage += abs(rings0Vector.at(at).sectionRatioVectorOfI.at(m) - rings1Vector.at(at).sectionRatioVectorOfI.at(m));
+            }
+        }
+    }
+    EMDIntensityAverage /= (sectionNumOfI + velodyneRings - upStart + 1);
+    cout<<"EMD Intensity Average Distance of Rings:  "<<EMDIntensityAverage<<endl;
+
+    //save the 1D EMD Distance in the EMD.txt
+    if(1)
+    {
+        ofstream recordEMDRange;
+        stringstream ssEMDRange;
+
+        ssEMDRange <<"/home/yh/EMDRange.txt";
+        recordEMDRange.open(ssEMDRange.str(), ios::app);
+        recordEMDRange << std::fixed << EMDRangeAverage << endl;
+
+        ofstream recordEMDIntensity;
+        stringstream ssEMDIntensity;
+
+        ssEMDIntensity <<"/home/yh/EMDIntensity.txt";
+        recordEMDIntensity.open(ssEMDIntensity.str(), ios::app);
+        recordEMDIntensity << std::fixed << EMDIntensityAverage << endl;
+    }
+
 }
 
 float Similarity::calculateRange(Eigen::Vector3f inputOrdinate)
@@ -487,7 +545,6 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     Similarity similarity(n);
-
 
     ros::spin();
     return 0;

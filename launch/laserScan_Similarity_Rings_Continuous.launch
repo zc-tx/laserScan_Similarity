@@ -13,9 +13,11 @@
 
     <param name="sectionNumOfI" value="20"/>
     <param name="minIntensity" value="0.0"/>
-    <param name="maxIntensity" value="150.0"/>
+    <param name="maxIntensity" value="100.0"/>
     
     <param name="durationSecond" value="0.5"/>
+    <param name="velodyneRings" value="16"/>
+    <param name="upStart" value="6"/>
 
   </node>
 </launch>
