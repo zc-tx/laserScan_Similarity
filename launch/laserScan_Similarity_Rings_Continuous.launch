@@ -15,9 +15,9 @@
     <param name="minIntensity" value="0.0"/>
     <param name="maxIntensity" value="100.0"/>
     
-    <param name="durationSecond" value="3"/>
+    <param name="durationSecond" value="0"/>
     <param name="velodyneRings" value="16"/>
-    <param name="upStart" value="0"/>
+    <param name="upStart" value="2"/>
 
   </node>
 </launch>

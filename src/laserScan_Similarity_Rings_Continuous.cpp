@@ -226,7 +226,8 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
     rings1Vector.clear();
 
     //Duartion
-    ros::Duration(this->durationSecond).sleep();
+    if(this->durationSecond > 0.0)
+        ros::Duration(this->durationSecond).sleep();
 
 }
 
@@ -482,7 +483,7 @@ void Similarity::getEMD1DRings()
     cout<<"EMD Intensity Average Distance of Rings:  "<<EMDIntensityAverage<<endl;
 
     //save the 1D EMD Distance in the EMD.txt
-    if(0)
+    if(1)
     {
         ofstream recordEMDRange;
         stringstream ssEMDRange;
@@ -500,7 +501,7 @@ void Similarity::getEMD1DRings()
     }
 
     //save the ring one by one
-    if(1)
+    if(0)
     {
         for(int i = this->upStart; i < this->velodyneRings; i++)
         {
