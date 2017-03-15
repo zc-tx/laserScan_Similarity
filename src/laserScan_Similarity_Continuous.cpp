@@ -218,8 +218,8 @@ scan Similarity::processScan(scan scanInput)
         scanInput.minRange = 9999;
         for(int i = 0; i < scanInput.pointCount; i++)
         {
-            float rangeOfPoint = calculateRange(scanInput.pointCloud.features.col(i).head(3));   //the range
-//            float rangeOfPoint = calculateRange(scanInput.pointCloud.features(2, i)); //Z-axis range only
+//            float rangeOfPoint = calculateRange(scanInput.pointCloud.features.col(i).head(3));   //the range
+            float rangeOfPoint = calculateRange(scanInput.pointCloud.features(2, i)); //Z-axis range only
             scanInput.rangeOfPointVector.push_back(rangeOfPoint);
 
             ///Thanks to Tang Li's advice

@@ -22,7 +22,7 @@ for i = 1 : 1 : length(Bin)
          EMD = EMD / sections;
 
         
-        if EMD < 0.03
+        if EMD < 0.015
             SM(j, i) = 0;
             SM(i, j) = 0;
         else

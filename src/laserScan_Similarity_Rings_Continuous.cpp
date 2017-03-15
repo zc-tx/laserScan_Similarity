@@ -469,7 +469,6 @@ void Similarity::getEMD1DRings()
         {
             for(int m = 0; m <= j; m++)
             {
-//                cout<<at<<"  "<<j<<"  "<<m<<endl;
                 EMDRangeAverage += abs(rings0Vector.at(at).sectionRatioVector.at(m) - rings1Vector.at(at).sectionRatioVector.at(m));
             }
         }
@@ -498,14 +497,14 @@ void Similarity::getEMD1DRings()
         ofstream recordEMDRange;
         stringstream ssEMDRange;
 
-        ssEMDRange <<"/home/yh/EMDRange.txt";
+        ssEMDRange <<"/home/yh/EMDRangeRings.txt";
         recordEMDRange.open(ssEMDRange.str(), ios::app);
         recordEMDRange << std::fixed << EMDRangeAverage << endl;
 
         ofstream recordEMDIntensity;
         stringstream ssEMDIntensity;
 
-        ssEMDIntensity <<"/home/yh/EMDIntensity.txt";
+        ssEMDIntensity <<"/home/yh/EMDIntensityRings.txt";
         recordEMDIntensity.open(ssEMDIntensity.str(), ios::app);
         recordEMDIntensity << std::fixed << EMDIntensityAverage << endl;
     }

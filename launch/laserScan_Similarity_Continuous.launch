@@ -8,8 +8,8 @@
     <param name="voxelFilterConfig" value="$(find laserScan_Similarity)/cfg/voxel_filter.yaml" />
 
     <param name="sectionNumOfR" value="20"/>
-    <param name="minRange" value="3.0"/>
-    <param name="maxRange" value="100.0" />
+    <param name="minRange" value="0.0"/>
+    <param name="maxRange" value="20.0" />
 
     <param name="sectionNumOfI" value="20"/>
     <param name="minIntensity" value="0.0"/>
