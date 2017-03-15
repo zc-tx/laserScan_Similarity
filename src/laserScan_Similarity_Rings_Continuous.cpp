@@ -164,32 +164,7 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
         voxelFilters.apply(*rawScan);
     }
 
-    //    if(first)
-    //    {
-    //        scan0.pointCloud = this->filterByRange(rawScan);
-
-    //        scan0 = this->processScan(scan0);
-
-    //        scan1.pointCloud = this->filterByRange(rawScan);
-
-    //        scan1 = this->processScan(scan1);
-
-    //        first = false;
-    //    }
-    //    else
-    //    {
-    //        scan1.pointCloud = this->filterByRange(rawScan);
-
-    //        scan1 = this->processScan(scan1);
-    //    }
-
-    //    this->getEMD1D();
-
-    //    //Pub
-    //    scanPointCloudPub.publish(PointMatcher_ros::pointMatcherCloudToRosMsg<float>(scan1.pointCloud, "velodyne", ros::Time::now()));
-
-    //    //Clear Scan1
-    //    scan1.clear();
+    ///Rings
 
     int ringRow = rawScan->getDescriptorStartingRow("ring");
 
@@ -215,7 +190,6 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
         //Regular processing
         if(first)
         {
-            cout<< i << "  " << tempScan.features.cols()<<endl;
             scan0.pointCloud = tempScan;
             scan0 = this->processScan(scan0);
             rings0Vector.push_back(scan0);
@@ -232,6 +206,13 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
             rings1Vector.push_back(scan1);
         }
 
+//        for(int k = 0; k < sectionNumOfR; k++)
+//        {
+//            cout<<std::fixed<<scan1.sectionRatioVector.at(k)<<"  ";
+//        }
+//        cout<<""<<endl;
+//        cout<<"Count:   "<<scan1.pointCount<<endl;
+
     }
 
     //Set it false here
@@ -245,7 +226,7 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
     rings1Vector.clear();
 
     //Duartion
-//    ros::Duration(this->durationSecond).sleep();
+    ros::Duration(this->durationSecond).sleep();
 
 }
 
@@ -277,6 +258,8 @@ Similarity::~Similarity()
 
 scan Similarity::processScan(scan scanInput)
 {
+    scanInput.clear();  ///Holy Shit!! why?
+
     scanInput.pointCount = scanInput.pointCloud.features.cols();
 
     ///scanInput Processing by Range
@@ -323,6 +306,13 @@ scan Similarity::processScan(scan scanInput)
             scanInput.sectionRatioVector.push_back((float)scanInput.sectionCountVector.at(i) / (float)scanInput.pointCount);
         }
     }
+
+//    for(int k = 0; k < sectionNumOfR; k++)
+//    {
+//        cout<<std::fixed<<scanInput.sectionRatioVector.at(k)<<"  ";
+//    }
+//    cout<<""<<endl;
+//    cout<<"Count:   "<<scanInput.pointCount<<endl;
 
     ///scanInput Processing by Intensity
     {
@@ -492,7 +482,7 @@ void Similarity::getEMD1DRings()
     cout<<"EMD Intensity Average Distance of Rings:  "<<EMDIntensityAverage<<endl;
 
     //save the 1D EMD Distance in the EMD.txt
-    if(1)
+    if(0)
     {
         ofstream recordEMDRange;
         stringstream ssEMDRange;
@@ -507,6 +497,29 @@ void Similarity::getEMD1DRings()
         ssEMDIntensity <<"/home/yh/EMDIntensityRings.txt";
         recordEMDIntensity.open(ssEMDIntensity.str(), ios::app);
         recordEMDIntensity << std::fixed << EMDIntensityAverage << endl;
+    }
+
+    //save the ring one by one
+    if(1)
+    {
+        for(int i = this->upStart; i < this->velodyneRings; i++)
+        {
+            int at = i - this->upStart;
+
+            ofstream recordBinRange;
+            stringstream ssBinRange;
+
+            ssBinRange << "/home/yh/BinRangeRings_OneScan.txt";
+            recordBinRange.open(ssBinRange.str(), ios::app);
+
+            for(int j = 0; j < sectionNumOfR; j++)
+            {
+                recordBinRange << std::fixed << rings1Vector.at(at).sectionRatioVector.at(j) <<" ";
+            }
+
+            recordBinRange <<endl;
+        }
+        cout<<"Bins write in txt!"<<endl;
     }
 
 }
