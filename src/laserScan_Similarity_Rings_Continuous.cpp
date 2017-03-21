@@ -393,14 +393,14 @@ void Similarity::getEMD1D()
         ofstream recordEMDRange;
         stringstream ssEMDRange;
 
-        ssEMDRange <<"/home/yh/EMDRange.txt";
+        ssEMDRange <<"/home/yh/temp/EMDRange.txt";
         recordEMDRange.open(ssEMDRange.str(), ios::app);
         recordEMDRange << std::fixed << EMDRange << endl;
 
         ofstream recordEMDIntensity;
         stringstream ssEMDIntensity;
 
-        ssEMDIntensity <<"/home/yh/EMDIntensity.txt";
+        ssEMDIntensity <<"/home/yh/temp/EMDIntensity.txt";
         recordEMDIntensity.open(ssEMDIntensity.str(), ios::app);
         recordEMDIntensity << std::fixed << EMDIntensity << endl;
     }
@@ -411,7 +411,7 @@ void Similarity::getEMD1D()
         ofstream recordBinRange;
         stringstream ssBinRange;
 
-        ssBinRange << "/home/yh/BinRange.txt";
+        ssBinRange << "/home/yh/temp/BinRange.txt";
         recordBinRange.open(ssBinRange.str(), ios::app);
 
         for(int i = 0; i < sectionNumOfR; i++)
@@ -424,7 +424,7 @@ void Similarity::getEMD1D()
         ofstream recordBinIntensity;
         stringstream ssBinIntensity;
 
-        ssBinIntensity << "/home/yh/BinIntensity.txt";
+        ssBinIntensity << "/home/yh/temp/BinIntensity.txt";
         recordBinIntensity.open(ssBinIntensity.str(), ios::app);
 
         for(int i = 0; i < sectionNumOfI; i++)
@@ -488,14 +488,14 @@ void Similarity::getEMD1DRings()
         ofstream recordEMDRange;
         stringstream ssEMDRange;
 
-        ssEMDRange <<"/home/yh/EMDRangeRings.txt";
+        ssEMDRange <<"/home/yh/temp/EMDRangeRings.txt";
         recordEMDRange.open(ssEMDRange.str(), ios::app);
         recordEMDRange << std::fixed << EMDRangeAverage << endl;
 
         ofstream recordEMDIntensity;
         stringstream ssEMDIntensity;
 
-        ssEMDIntensity <<"/home/yh/EMDIntensityRings.txt";
+        ssEMDIntensity <<"/home/yh/temp/EMDIntensityRings.txt";
         recordEMDIntensity.open(ssEMDIntensity.str(), ios::app);
         recordEMDIntensity << std::fixed << EMDIntensityAverage << endl;
     }
@@ -510,7 +510,7 @@ void Similarity::getEMD1DRings()
             ofstream recordBinRange;
             stringstream ssBinRange;
 
-            ssBinRange << "/home/yh/BinRangeRings_OneScan.txt";
+            ssBinRange << "/home/yh/temp/BinRangeRings_OneScan.txt";
             recordBinRange.open(ssBinRange.str(), ios::app);
 
             for(int j = 0; j < sectionNumOfR; j++)

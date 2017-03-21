@@ -41,3 +41,15 @@ target_link_libraries(laserScan_Similarity_Rings_Continuous
 ${catkin_LIBRARIES}
 ${libpointmatcher_LIBRARIES}
 )
+
+add_executable(laserScan_Similarity_kitti src/laserScan_Similarity_kitti.cpp)
+target_link_libraries(laserScan_Similarity_kitti 
+${catkin_LIBRARIES}
+${libpointmatcher_LIBRARIES}
+)
+
+add_executable(laserScan_Similarity_kitti_Rings src/laserScan_Similarity_kitti_Rings.cpp)
+target_link_libraries(laserScan_Similarity_kitti_Rings 
+${catkin_LIBRARIES}
+${libpointmatcher_LIBRARIES}
+)

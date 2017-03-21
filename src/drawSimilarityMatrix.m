@@ -3,6 +3,7 @@
 frames = length(Bin);
 sections = size(Bin, 2)-1;
 SM = zeros(frames, frames);
+loopCount = 1;
 
 for i = 1 : 1 : length(Bin)
     for j = 1 : 1 : i
@@ -22,7 +23,7 @@ for i = 1 : 1 : length(Bin)
          EMD = EMD / sections;
 
         
-        if EMD < 0.015
+        if EMD < 0.06
             SM(j, i) = 0;
             SM(i, j) = 0;
         else
@@ -30,7 +31,9 @@ for i = 1 : 1 : length(Bin)
             SM(i, j) = 1;
         end   
         
-        
+        index(loopCount, 1) = i;
         
     end
 end
+
+imshow(SM);

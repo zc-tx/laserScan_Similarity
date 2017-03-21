@@ -102,7 +102,7 @@ private:
 
     bool first = true;
 protected:
-
+    float averageRange;
 };
 
 Similarity::Similarity(ros::NodeHandle& n):
@@ -145,6 +145,8 @@ Similarity::Similarity(ros::NodeHandle& n):
 void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
 {
     cout<<"---------------------------------------"<<endl;
+
+    averageRange = 0;
 
     DP* rawScan = new DP(PointMatcher_ros::rosMsgToPointMatcherCloud<float>(cloudMsgIn));
 
@@ -218,8 +220,8 @@ scan Similarity::processScan(scan scanInput)
         scanInput.minRange = 9999;
         for(int i = 0; i < scanInput.pointCount; i++)
         {
-//            float rangeOfPoint = calculateRange(scanInput.pointCloud.features.col(i).head(3));   //the range
-            float rangeOfPoint = calculateRange(scanInput.pointCloud.features(2, i)); //Z-axis range only
+            float rangeOfPoint = calculateRange(scanInput.pointCloud.features.col(i).head(3));   //the range
+//            float rangeOfPoint = calculateRange(scanInput.pointCloud.features(2, i)); //Z-axis range only
             scanInput.rangeOfPointVector.push_back(rangeOfPoint);
 
             ///Thanks to Tang Li's advice
@@ -228,7 +230,12 @@ scan Similarity::processScan(scan scanInput)
 //            if(rangeOfPoint < scanInput.minRange)
 //                scanInput.minRange = rangeOfPoint;
 
+            averageRange += rangeOfPoint;
+
         }
+
+        averageRange /= scanInput.pointCount;
+                cout<<"A:  "<<averageRange<<endl;
 
         scanInput.minRange = this->minRange;
         scanInput.maxRange = this->maxRange;
@@ -335,14 +342,14 @@ void Similarity::getEMD1D()
         ofstream recordEMDRange;
         stringstream ssEMDRange;
 
-        ssEMDRange <<"/home/yh/EMDRange.txt";
+        ssEMDRange <<"/home/yh/temp/EMDRange.txt";
         recordEMDRange.open(ssEMDRange.str(), ios::app);
         recordEMDRange << std::fixed << EMDRange << endl;
 
         ofstream recordEMDIntensity;
         stringstream ssEMDIntensity;
 
-        ssEMDIntensity <<"/home/yh/EMDIntensity.txt";
+        ssEMDIntensity <<"/home/yh/temp/EMDIntensity.txt";
         recordEMDIntensity.open(ssEMDIntensity.str(), ios::app);
         recordEMDIntensity << std::fixed << EMDIntensity << endl;
     }
@@ -353,12 +360,15 @@ void Similarity::getEMD1D()
         ofstream recordBinRange;
         stringstream ssBinRange;
 
-        ssBinRange << "/home/yh/BinRange.txt";
+        ssBinRange << "/home/yh/temp/BinRange.txt";
         recordBinRange.open(ssBinRange.str(), ios::app);
 
         for(int i = 0; i < sectionNumOfR; i++)
         {
-            recordBinRange << std::fixed << scan1.sectionRatioVector.at(i)<<" ";
+            if(i < sectionNumOfR - 1)
+                recordBinRange << std::fixed << scan1.sectionRatioVector.at(i)<<" ";
+            else
+                recordBinRange << std::fixed << scan1.sectionRatioVector.at(i);
         }
 
         recordBinRange <<endl;
@@ -366,16 +376,33 @@ void Similarity::getEMD1D()
         ofstream recordBinIntensity;
         stringstream ssBinIntensity;
 
-        ssBinIntensity << "/home/yh/BinIntensity.txt";
+        ssBinIntensity << "/home/yh/temp/BinIntensity.txt";
         recordBinIntensity.open(ssBinIntensity.str(), ios::app);
 
         for(int i = 0; i < sectionNumOfI; i++)
         {
-            recordBinIntensity << std::fixed << scan1.sectionRatioVectorOfI.at(i)<<" ";
+            if(i < sectionNumOfI - 1)
+                recordBinIntensity << std::fixed << scan1.sectionRatioVectorOfI.at(i)<<" ";
+            else
+                recordBinIntensity << std::fixed << scan1.sectionRatioVectorOfI.at(i);
         }
 
         recordBinIntensity <<endl;
 
+    }
+
+    //save the averageRange, testing
+    if(1)
+    {
+        ofstream recordAverageRange;
+        stringstream ssAverageRange;
+
+        ssAverageRange << "/home/yh/temp/averageRange.txt";
+        recordAverageRange.open(ssAverageRange.str(), ios::app);
+
+        recordAverageRange << std::fixed << this->averageRange;
+
+        recordAverageRange <<endl;
     }
 
 }
