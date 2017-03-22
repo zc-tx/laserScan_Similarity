@@ -15,7 +15,7 @@
     <param name="minIntensity" value="0.0"/>
     <param name="maxIntensity" value="150.0"/>
 
-    <param name="baseDirKitti" value="/home/yh/kitti_benchMark/00/velodyne_points/data/"/>
+    <param name="baseDirKitti" value="/home/yh/mine_ws/src/laserScan_Similarity/kitti_benchMark/singleScan/"/>
 
   </node>
 </launch>

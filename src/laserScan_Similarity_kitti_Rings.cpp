@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <fstream>
 #include <vector>
+#include <math.h>
 
 #include <stdlib.h>
 
@@ -80,10 +81,12 @@ public:
     float calculateRange(Eigen::Vector3f inputOrdinate);
     int judgeBucket(float range, float minRange, float sectionLength, int sectionNum);
 
-    void getRawScan(const sensor_msgs::PointCloud2& cloudMsgIn);
+//    void getRawScan(const sensor_msgs::PointCloud2& cloudMsgIn);
     DP filterByRange(DP* rawScan);
 
     DP readFromDir(string fileName);
+
+    int getRingOfPoint(Eigen::Vector3f inputXYZ);
 
 private:
     ros::Subscriber scanPointCloudSub;
@@ -217,6 +220,7 @@ Similarity::Similarity(ros::NodeHandle& n):
 //    scanPointCloudPub = n.advertise<sensor_msgs::PointCloud2>("after_filtered_points", 2, true);
 }
 
+/*
 void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
 {
     cout<<"---------------------------------------"<<endl;
@@ -258,6 +262,7 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
     //Clear Scan1
     scan1.clear();
 }
+*/
 
 Similarity::DP Similarity::filterByRange(DP *rawScan)
 {
@@ -304,24 +309,30 @@ Similarity::DP Similarity::readFromDir(string fileName)
     tempScan.addFeature("y", PM::Matrix::Zero(1, num));
     tempScan.addFeature("z", PM::Matrix::Zero(1, num));
     tempScan.addDescriptor("intensity", PM::Matrix::Zero(1, num));
+    tempScan.addDescriptor("ring", PM::Matrix::Zero(1, num));
 
     int x = tempScan.getFeatureStartingRow("x");
     int y = tempScan.getFeatureStartingRow("y");
     int z = tempScan.getFeatureStartingRow("z");
-    int intensity = tempScan.getFeatureStartingRow("intensity");
-
+    int intensity = tempScan.getDescriptorStartingRow("intensity");
+    int ring = tempScan.getDescriptorStartingRow("ring");
 
     for (int32_t i=0; i<num; i++)
     {
         tempScan.features(x,i) = *px;
         tempScan.features(y,i) = *py;
         tempScan.features(z,i) = *pz;
-        tempScan.features(intensity,i) = *pr;
+        tempScan.descriptors(intensity,i) = *pr;
+
+        Eigen::Vector3f inputXYZ = tempScan.features.col(i).head(3);
+
+        int ringNo = this->getRingOfPoint(inputXYZ);
+
         px+=4; py+=4; pz+=4; pr+=4;
     }
     fclose(stream);
 
-    ///free the ptr
+    ///free the ptr, crash or not
     {
         free(data);
     }
@@ -557,6 +568,34 @@ int Similarity::judgeBucket(float range, float minRange, float sectionLength, in
     ///Problem exists
 //    cout<<"Not in the Bucket!  Return the last Setcion!  Length:  "<<range<<endl;
     return sectionNum-1;
+}
+
+int Similarity::getRingOfPoint(Eigen::Vector3f inputXYZ)
+{
+//    float range = this->calculateRange(inputXYZ);
+
+    float range = inputXYZ.norm();
+
+    float theta = asin(inputXYZ(2) / range );
+
+    theta = 180 / M_PI * theta;
+
+
+    ///TODO: WRONG CALCULATATION OF RING ???
+    if(1)
+    {
+        ofstream recordRing;
+        stringstream ssRing;
+
+        ssRing << "/home/yh/temp/ring.txt";
+        recordRing.open(ssRing.str(), ios::app);
+
+        recordRing << std::fixed << theta;
+
+        recordRing <<endl;
+    }
+
+    return 1;
 }
 
 int main(int argc, char **argv)

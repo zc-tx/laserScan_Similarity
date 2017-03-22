@@ -1,7 +1,7 @@
 % Just to draw Similarity Matrix
 
 frames = length(Bin);
-sections = size(Bin, 2)-1;
+sections = size(Bin, 2);
 SM = zeros(frames, frames);
 loopCount = 1;
 

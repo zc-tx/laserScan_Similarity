@@ -15,7 +15,7 @@
     <param name="minIntensity" value="0.0"/>
     <param name="maxIntensity" value="150.0"/>
 
-    <param name="baseDirKitti" value="/media/yh/yh/DataSet/kitti_benckmark_velodyne/dataset/sequences/00/velodyne/"/>
+    <param name="baseDirKitti" value="/media/yh/yh/DataSet/kitti_benckmark_velodyne/dataset/sequences/05/velodyne/"/>
 
   </node>
 </launch>
