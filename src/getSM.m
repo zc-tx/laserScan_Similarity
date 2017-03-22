@@ -25,7 +25,7 @@ function SM = getSM( Bin )
              EMD = EMD / sections;
 
 
-            if EMD < 0.038
+            if EMD < 0.100
                 SM(j, i) = 0;
                 SM(i, j) = 0;
             else
@@ -35,7 +35,6 @@ function SM = getSM( Bin )
 
         end
     end
-
-
+    imshow(SM);
 end
 

@@ -111,6 +111,7 @@ private:
 
     float averageRange;
     const string baseDirKitti;
+    const int ringsCount;
 protected:
 
 };
@@ -126,7 +127,8 @@ Similarity::Similarity(ros::NodeHandle& n):
     maxRange(getParam<float>("maxRange", 100.0)),
     minIntensity(getParam<float>("minIntensity", 0.0)),
     maxIntensity(getParam<float>("maxIntensity", 200.0)),
-    baseDirKitti(getParam<string>("baseDirKitti", "."))
+    baseDirKitti(getParam<string>("baseDirKitti", ".")),
+    ringsCount(getParam<int>("ringsCount", 16))
 {
     //load filterConfig  --->  Voxel Grid Filter, thx to Lv
     string filterConfigName;
@@ -317,16 +319,35 @@ Similarity::DP Similarity::readFromDir(string fileName)
     int intensity = tempScan.getDescriptorStartingRow("intensity");
     int ring = tempScan.getDescriptorStartingRow("ring");
 
-    for (int32_t i=0; i<num; i++)
+    int ringOfPt = 0;
+    int ring_size = num / this->ringsCount;
+
+    for (int32_t i = 0; i < num; i++)
     {
         tempScan.features(x,i) = *px;
         tempScan.features(y,i) = *py;
         tempScan.features(z,i) = *pz;
         tempScan.descriptors(intensity,i) = *pr;
 
-        Eigen::Vector3f inputXYZ = tempScan.features.col(i).head(3);
+//        Eigen::Vector3f inputXYZ = tempScan.features.col(i).head(3);
 
-        int ringNo = this->getRingOfPoint(inputXYZ);
+//        int ringNo = this->getRingOfPoint(inputXYZ);
+
+
+                if (i != 0 && (i % ring_size) == 0)
+                {
+                    ringOfPt++;
+                }
+
+                if (ringOfPt < this->ringsCount)
+                {
+                   tempScan.descriptors(ring, i) = ringOfPt;
+                }
+                else
+                {
+                    cout<<"OUT OF RANGE"<<endl;
+                }
+
 
         px+=4; py+=4; pz+=4; pr+=4;
     }

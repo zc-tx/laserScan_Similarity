@@ -308,7 +308,7 @@ Similarity::DP Similarity::readFromDir(string fileName)
     int x = tempScan.getFeatureStartingRow("x");
     int y = tempScan.getFeatureStartingRow("y");
     int z = tempScan.getFeatureStartingRow("z");
-    int intensity = tempScan.getFeatureStartingRow("intensity");
+    int intensity = tempScan.getDescriptorStartingRow("intensity");
 
 
     for (int32_t i=0; i<num; i++)
@@ -316,7 +316,7 @@ Similarity::DP Similarity::readFromDir(string fileName)
         tempScan.features(x,i) = *px;
         tempScan.features(y,i) = *py;
         tempScan.features(z,i) = *pz;
-        tempScan.features(intensity,i) = *pr;
+        tempScan.descriptors(intensity,i) = *pr;
         px+=4; py+=4; pz+=4; pr+=4;
     }
     fclose(stream);
@@ -348,7 +348,8 @@ scan Similarity::processScan(scan scanInput)
 //            float rangeOfPoint = calculateRange(scanInput.pointCloud.features(2, i)); //Z-axis range only
             scanInput.rangeOfPointVector.push_back(rangeOfPoint);
 
-//            ///Thanks to Tang Li's advice
+            ///Get the min and max range / intensity of the pointcloud
+            ///Use the certain value in the launchFile
 //            if(rangeOfPoint > scanInput.maxRange)
 //                scanInput.maxRange = rangeOfPoint;
 //            if(rangeOfPoint < scanInput.minRange)
@@ -407,9 +408,9 @@ scan Similarity::processScan(scan scanInput)
 
         }
 
-//        cout<<"maxIntensity:  "<<scanInput.maxIntensity<<"  minIntensity:  "<<scanInput.minIntensity<<endl;
         scanInput.minIntensity = this->minIntensity;
         scanInput.maxIntensity = this->maxIntensity;
+//        cout<<"maxIntensity:  "<<scanInput.maxIntensity<<"  minIntensity:  "<<scanInput.minIntensity<<endl;
         scanInput.sectionLengthOfI = (scanInput.maxIntensity - scanInput.minIntensity) / sectionNumOfI;
 
         for(int i = 0; i < sectionNumOfI; i++)
