@@ -213,6 +213,10 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
 //        cout<<""<<endl;
 //        cout<<"Count:   "<<scan1.pointCount<<endl;
 
+        ///??? changed from kitti_rings.cpp
+        /// reset
+        scan1.clear();
+
     }
 
     //Set it false here
@@ -222,7 +226,6 @@ void Similarity::getRawScan(const sensor_msgs::PointCloud2 &cloudMsgIn)
 
     scanPointCloudPub.publish(PointMatcher_ros::pointMatcherCloudToRosMsg<float>(rings1Vector.at(0).pointCloud, "velodyne", ros::Time::now()));
 
-    scan1.clear();
     rings1Vector.clear();
 
     //Duartion

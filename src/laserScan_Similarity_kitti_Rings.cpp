@@ -74,7 +74,7 @@ public:
     Similarity(ros::NodeHandle &n);
     ~Similarity();
 
-    void getEMD1D();
+    void getEMDRings();
     scan processScan(scan scanInput);
     float calculateRange(float inputOrdinate);
     float calculateRangeIn2DPlane(Eigen::Vector2f inputOrdinate);
@@ -96,6 +96,9 @@ private:
     scan scan0;
     scan scan1;
 
+    vector<scan> rings0Vector;    //scan is ring, ring is scan :)
+    vector<scan> rings1Vector;    //complex   :(
+
     ros::NodeHandle& n;
     const int sectionNumOfR;
     const int sectionNumOfI;
@@ -112,6 +115,7 @@ private:
     float averageRange;
     const string baseDirKitti;
     const int ringsCount;
+    const int upStart;
 protected:
 
 };
@@ -128,7 +132,8 @@ Similarity::Similarity(ros::NodeHandle& n):
     minIntensity(getParam<float>("minIntensity", 0.0)),
     maxIntensity(getParam<float>("maxIntensity", 200.0)),
     baseDirKitti(getParam<string>("baseDirKitti", ".")),
-    ringsCount(getParam<int>("ringsCount", 16))
+    ringsCount(getParam<int>("ringsCount", 16)),
+    upStart(getParam<int>("upStart", 0))
 {
     //load filterConfig  --->  Voxel Grid Filter, thx to Lv
     string filterConfigName;
@@ -153,6 +158,7 @@ Similarity::Similarity(ros::NodeHandle& n):
     scanPointCloudPub = n.advertise<sensor_msgs::PointCloud2>("after_filtered_points", 2, true);
 
     //read from dir in kittti dataset, ONE BY ONE
+    //rings added
     {
         //Holy Shit!
         ///FUCK READING FILE
@@ -177,6 +183,7 @@ Similarity::Similarity(ros::NodeHandle& n):
         //Sort the fileName!
         sort(fileNameVector.begin(), fileNameVector.end());
 
+        ///i, j, k
         for(int i = 0; i < fileNameVector.size(); i++)
         {
             cout<<"--------------------------------------"<<endl;
@@ -187,29 +194,58 @@ Similarity::Similarity(ros::NodeHandle& n):
 
             cout<<"fileName:  "<<fileName<<endl;
 
-            //first
-            ///NO RANGE FILTER
-            if(i == 0)
-            {
-                scan0.pointCloud = this->readFromDir(fileName);
-                scan0 = this->processScan(scan0);
+            //process ring by ring
+            DP rawScan = this->readFromDir(fileName);
+            int ringRow = rawScan.getDescriptorStartingRow("ring");
 
-                scan1.pointCloud = this->readFromDir(fileName);
-                scan1 = this->processScan(scan1);
-            }
-            else
+            for(int j = this->upStart; j < this->ringsCount; j++)
             {
-                scan1.pointCloud = this->readFromDir(fileName);
-                scan1 = this->processScan(scan1);
-            }
+                DP tempScan = rawScan.createSimilarEmpty();
+                int count = 0;
+                for(int k = 0; k < rawScan.features.cols(); k++)
+                {
+                    if(rawScan.descriptors(ringRow, k) == j)
+                    {
+                        tempScan.setColFrom(count, rawScan, k);
+                        count++;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                tempScan.conservativeResize(count);
 
-            this->getEMD1D();
+                //Regular processing
+                /// first scan is not useful anymore
+                if(i==0)
+                {
+                    scan0.pointCloud = tempScan;
+                    scan0 = this->processScan(scan0);
+                    rings0Vector.push_back(scan0);
+
+                    scan1.pointCloud = tempScan;
+                    scan1 = this->processScan(scan1);
+                    rings1Vector.push_back(scan1);
+
+                }
+                else
+                {
+                    scan1.pointCloud = tempScan;
+                    scan1 = this->processScan(scan1);
+                    rings1Vector.push_back(scan1);
+                }
+
+                ///reset ???
+                scan1.clear();
+            }
+            this->getEMDRings();
 
             //Pub
-            scanPointCloudPub.publish(PointMatcher_ros::pointMatcherCloudToRosMsg<float>(scan1.pointCloud, "velodyne", ros::Time::now()));
+            scanPointCloudPub.publish(PointMatcher_ros::pointMatcherCloudToRosMsg<float>(rawScan, "velodyne", ros::Time::now()));
 
             //Clear Scan1
-            scan1.clear();
+            rings1Vector.clear();
 
         }
 
@@ -324,30 +360,27 @@ Similarity::DP Similarity::readFromDir(string fileName)
 
     for (int32_t i = 0; i < num; i++)
     {
-        tempScan.features(x,i) = *px;
-        tempScan.features(y,i) = *py;
-        tempScan.features(z,i) = *pz;
-        tempScan.descriptors(intensity,i) = *pr;
+        if (i != 0 && (i % ring_size) == 0)
+        {
+            ringOfPt++;
+        }
 
-//        Eigen::Vector3f inputXYZ = tempScan.features.col(i).head(3);
+        Eigen::Vector3f range(*px, py, *pz);
 
-//        int ringNo = this->getRingOfPoint(inputXYZ);
-
-
-                if (i != 0 && (i % ring_size) == 0)
-                {
-                    ringOfPt++;
-                }
-
-                if (ringOfPt < this->ringsCount)
-                {
-                   tempScan.descriptors(ring, i) = ringOfPt;
-                }
-                else
-                {
-                    cout<<"OUT OF RANGE"<<endl;
-                }
-
+        //thx to https://github.com/robofit/but_velodyne_lib
+        //filer by maxRange
+        if (ringOfPt < this->ringsCount && range.norm() < this->maxRange)
+        {
+           tempScan.descriptors(ring, i) = ringOfPt;
+           tempScan.descriptors(intensity,i) = *pr;
+           tempScan.features(x,i) = *px;
+           tempScan.features(y,i) = *py;
+           tempScan.features(z,i) = *pz;
+        }
+        else
+        {
+            //nothing
+        }
 
         px+=4; py+=4; pz+=4; pr+=4;
     }
@@ -469,8 +502,9 @@ scan Similarity::processScan(scan scanInput)
     return scanInput;
 }
 
-void Similarity::getEMD1D()
+void Similarity::getEMDRings()
 {
+    /*
     float EMDRange = 0;
     for(int i = 0; i < sectionNumOfR; i++)
     {
@@ -493,7 +527,9 @@ void Similarity::getEMD1D()
     EMDIntensity /= sectionNumOfI;
     cout<<"EMD Intensity Distance:  "<<EMDIntensity<<endl;
 
+
     //save the 1D EMD Distance in the EMD.txt
+    ///NO
     if(1)
     {
         ofstream recordEMDRange;
@@ -510,41 +546,55 @@ void Similarity::getEMD1D()
         recordEMDIntensity.open(ssEMDIntensity.str(), ios::app);
         recordEMDIntensity << std::fixed << EMDIntensity << endl;
     }
+    */
 
-    //save the origin data to draw the Similarity Matrix
+    //save the origin Bins data to draw the Similarity Matrix
     if(1)
     {
+        ///record the range bins
         ofstream recordBinRange;
         stringstream ssBinRange;
 
-        ssBinRange << "/home/yh/temp/BinRange.txt";
+        ssBinRange << "/home/yh/temp/BinRangeRings.txt";
         recordBinRange.open(ssBinRange.str(), ios::app);
 
-        for(int i = 0; i < sectionNumOfR; i++)
+        for(int r = this->upStart; r < this->ringsCount; r++)
         {
-            if(i < sectionNumOfR - 1)
-                recordBinRange << std::fixed << scan1.sectionRatioVector.at(i)<<" ";
-            else
-                recordBinRange << std::fixed << scan1.sectionRatioVector.at(i);
+            int at = r - upStart;
+
+            for(int i = 0; i < sectionNumOfR; i++)
+            {
+                if(i < sectionNumOfR - 1)
+                    recordBinRange << std::fixed << rings1Vector.at(at).sectionRatioVector.at(i)<<" ";
+                else
+                    recordBinRange << std::fixed << rings1Vector.at(at).sectionRatioVector.at(i);
+            }
+
+            recordBinRange <<endl;
         }
 
-        recordBinRange <<endl;
-
+        ///record the intensity bins
         ofstream recordBinIntensity;
         stringstream ssBinIntensity;
 
-        ssBinIntensity << "/home/yh/temp/BinIntensity.txt";
+        ssBinIntensity << "/home/yh/temp/BinIntensityRings.txt";
         recordBinIntensity.open(ssBinIntensity.str(), ios::app);
 
-        for(int i = 0; i < sectionNumOfI; i++)
+        for(int r = this->upStart; r < this->ringsCount; r++)
         {
-            if(i < sectionNumOfI - 1)
-                recordBinIntensity << std::fixed << scan1.sectionRatioVectorOfI.at(i)<<" ";
-            else
-                recordBinIntensity << std::fixed << scan1.sectionRatioVectorOfI.at(i);
-        }
+            int at = r - upStart;
 
-        recordBinIntensity <<endl;
+            for(int i = 0; i < sectionNumOfI; i++)
+            {
+                if(i < sectionNumOfI - 1)
+                    recordBinIntensity << std::fixed << rings1Vector.at(at).sectionRatioVectorOfI.at(i)<<" ";
+                else
+                    recordBinIntensity << std::fixed << rings1Vector.at(at).sectionRatioVectorOfI.at(i);
+            }
+
+            recordBinIntensity <<endl;
+
+        }
 
     }
 
