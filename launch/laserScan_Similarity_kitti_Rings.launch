@@ -15,7 +15,8 @@
     <param name="minIntensity" value="0.0"/>
     <param name="maxIntensity" value="1.0"/>
 
-    <param name="baseDirKitti" value="/media/yh/yh/DataSet/kitti_benckmark_velodyne/dataset/sequences/05/velodyne/"/>
+    <!--param name="baseDirKitti" value="/home/yh/mine_ws/src/laserScan_Similarity/kitti_benchMark/singleScan/"/-->
+    <param name="baseDirKitti" value="/media/yh/yh/DataSet/kitti_benckmark_velodyne/dataset/sequences/00/velodyne/"/>
     <param name="ringsCount" value="64"/>
     <param name="upStart" value="0"/>
 

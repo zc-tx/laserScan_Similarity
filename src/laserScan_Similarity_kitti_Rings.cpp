@@ -365,7 +365,10 @@ Similarity::DP Similarity::readFromDir(string fileName)
             ringOfPt++;
         }
 
-        Eigen::Vector3f range(*px, py, *pz);
+        Eigen::Vector3f range;
+        range(0) = *px;
+        range(1) = *py;
+        range(2) = *pz;
 
         //thx to https://github.com/robofit/but_velodyne_lib
         //filer by maxRange

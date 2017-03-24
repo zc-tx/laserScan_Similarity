@@ -1,4 +1,4 @@
-function SM = cosSM( images )
+function SM = absSM( images )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
     
@@ -14,20 +14,20 @@ function SM = cosSM( images )
 %            end
            A = images{i}; 
            B = images{j};
-           sumCos = 0;
+           sumAbs = 0;
            
            tic
-           for k = 1 : 1 : length(A)
-               C = A(k, :);
-               D = B(k, :);
-               sumCos = sumCos + dot(C, D) / (norm(C)*norm(D));    
+           for k = 1 : 1 : size(A, 1)
+               for m = 1 : 1: size(A, 2)
+                    sumAbs = sumAbs + abs(A(k, m) - B(k, m));
+               end
            end
            
-           cosSimity = sumCos / length(A);
+           absSimity = sumAbs / (size(A, 1) * size(A, 2));
            toc
            
-           SM(j, i) = cosSimity;
-           SM(i, j) = cosSimity;
+           SM(j, i) = absSimity;
+           SM(i, j) = absSimity;
            
        end        
     end

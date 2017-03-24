@@ -17,8 +17,9 @@ function SM = emdSM( images )
            B = images{j};
            sumEMD = 0;
            
+           tic
            for k = 1 : 1 : length(A)
-                C = A(k, :);
+                C = A(k, :);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                 D = B(k, :);
                 EMD = 0;
                 
@@ -34,6 +35,7 @@ function SM = emdSM( images )
            end
            
            EMDSimity = sumEMD / length(A);
+           toc
            
            SM(j, i) = EMDSimity;
            SM(i, j) = EMDSimity;
