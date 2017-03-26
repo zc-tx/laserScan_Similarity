@@ -20,6 +20,9 @@ Similarity Matrix:
 
 ![](https://github.com/ZJUYH/laserScan_Similarity/raw/master/image/1.png)
 
+Test on kitti_odom_benchmark 05:
+
+![](https://github.com/ZJUYH/laserScan_Similarity/raw/master/image/kitti_05.png)
 
 ##Thanks:
 
