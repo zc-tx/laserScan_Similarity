@@ -25,16 +25,17 @@ function SM = getSM( Bin )
              EMD = EMD / sections;
 
 
-            if EMD < 0.100
-                SM(j, i) = 0;
-                SM(i, j) = 0;
-            else
-                SM(j, i) = 1;
-                SM(i, j) = 1;
-            end   
+%             if EMD < 0.100
+%                 SM(j, i) = 0;
+%                 SM(i, j) = 0;
+%             else
+%                 SM(j, i) = 1;
+%                 SM(i, j) = 1;
+%             end   
+            SM(i, j) = EMD;
+            SM(j, i) = EMD;
 
         end
     end
-    imshow(SM);
 end
 

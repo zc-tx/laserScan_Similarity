@@ -15,7 +15,7 @@ function drawLoop( res, pose )
         plot3([pi(1) pj(1)],[pi(2) pj(2)],[pi(3)+idi*0.1 pj(3)+idj*0.1],'r','LineWidth',1)   
         % To draw on the trajectory of kitti
         drawnow
-        i
+        
     end
 
 end
