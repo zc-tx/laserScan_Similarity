@@ -1,4 +1,4 @@
-function SM = getTrueSM( testPose )
+function SM = getTrueSM( testPose, disThreshold)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
     
@@ -18,7 +18,7 @@ function SM = getTrueSM( testPose )
             
             dis = norm(xyI - xyJ);
             
-            if dis < 3 && (i - j) > 30
+            if dis < disThreshold && (i - j) > 100
                 SM(i, j) = 0;
                 SM(j, i) = 0;
             else

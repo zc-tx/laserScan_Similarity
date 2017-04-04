@@ -37,6 +37,5 @@ function SM01 = SM01lization( SM, threshold, judge)
         end
     end
     
-    imshow(SM01);
 end
 
