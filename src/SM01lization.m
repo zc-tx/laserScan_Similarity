@@ -16,7 +16,7 @@ function SM01 = SM01lization( SM, threshold, judge)
             end
             
             if judge == 0
-                if SM(i, j) > threshold
+                if SM(i, j) > threshold && (i - j) > 100  % car-parking filtered
                     SM01(j, i) = 0;
                     SM01(i, j) = 0;
                 else
@@ -24,7 +24,7 @@ function SM01 = SM01lization( SM, threshold, judge)
                     SM01(j, i) = 1;
                 end
             else
-                if SM(i, j) < threshold
+                if SM(i, j) < threshold && (i - j) > 100 % car-parking filtered
                     SM01(j, i) = 0;
                     SM01(i, j) = 0;
                 else
