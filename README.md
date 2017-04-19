@@ -2,7 +2,7 @@
 
 Rohling T, Mack J, Schulz D. A fast histogram-based similarity measure for detecting loop closures in 3-D LIDAR data[C]// Ieee/rsj International Conference on Intelligent Robots and Systems. IEEE, 2015:736-741.
 
-##Images
+## Images
 
 Our own data in Yuquan Campus, from Velodyen VLP16.
 
@@ -24,12 +24,22 @@ Test on kitti_odom_benchmark 05:
 
 ![](https://github.com/ZJUYH/laserScan_Similarity/raw/master/image/kitti_05.png)
 
-##Thanks:
+The ground truth poses in SM-Matrix:
+
+![](https://github.com/ZJUYH/laserScan_Similarity/raw/master/image/smtrue.jpg)
+
+PR-Curve of EMD & Cos:
+
+![](https://github.com/ZJUYH/laserScan_Similarity/raw/master/image/PRCurve05.jpg)
+
+ROC-Curve of EMD & Cos:
+
+![](https://github.com/ZJUYH/laserScan_Similarity/raw/master/image/ROCCurve05.jpg)
+
+## Thanks:
 
 Ethz_asl for libpointmatcher
 
-##IS GOING ON
+## IS GOING ON
 
-Add the histogram of Intensity, and the rings of velodyne points
-
-going & going
+start to use deep learning on Place Recognition
