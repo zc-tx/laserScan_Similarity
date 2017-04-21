@@ -7,6 +7,8 @@ function SM = cosSM( images )
     
     
     for i = 1 : 1 : frames
+       i
+       tic
        for j = 1 : 1 : i
           
 %            if j == i
@@ -16,20 +18,19 @@ function SM = cosSM( images )
            B = images{j};
            sumCos = 0;
            
-           tic
-           for k = 1 : 1 : length(A)
+           for k = 1 : 1 : size(A,1)
                C = A(k, :);
                D = B(k, :);
                sumCos = sumCos + dot(C, D) / (norm(C)*norm(D));    
            end
            
-           cosSimity = sumCos / length(A);
-           toc
+           cosSimity = sumCos / size(A,1);
            
            SM(j, i) = cosSimity;
            SM(i, j) = cosSimity;
            
-       end        
+       end   
+       toc
     end
     
 

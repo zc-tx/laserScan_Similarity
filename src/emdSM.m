@@ -4,9 +4,11 @@ function SM = emdSM( images )
     
     frames = length(images);
     SM = zeros(frames, frames);
-    sections = 40;
-    
+    sections = 80;
+            
     for i = 1 : 1 : frames
+       i
+       tic
        for j = 1 : 1 : i
           
 %            if j == i
@@ -17,8 +19,7 @@ function SM = emdSM( images )
            B = images{j};
            sumEMD = 0;
            
-           tic
-           for k = 1 : 1 : length(A)
+           for k = 1 : 1 : size(A,1)
                 C = A(k, :);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
                 D = B(k, :);
                 EMD = 0;
@@ -34,16 +35,14 @@ function SM = emdSM( images )
                 sumEMD = sumEMD + EMD;    
            end
            
-           EMDSimity = sumEMD / length(A);
-           toc
+           EMDSimity = sumEMD / size(A,1);
            
            SM(j, i) = EMDSimity;
            SM(i, j) = EMDSimity;
            
-       end        
+       end    
+       toc
     end
     
-
-
 end
 
