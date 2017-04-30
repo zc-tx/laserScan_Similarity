@@ -7,16 +7,16 @@
     <param name="isVoxelFilter" value="false"/>
     <param name="voxelFilterConfig" value="$(find laserScan_Similarity)/cfg/voxel_filter.yaml" />
 
-    <param name="sectionNumOfR" value="40"/>
+    <param name="sectionNumOfR" value="80"/>
     <param name="minRange" value="0.0"/>
     <param name="maxRange" value="80.0" />
 
-    <param name="sectionNumOfI" value="40"/>
+    <param name="sectionNumOfI" value="80"/>
     <param name="minIntensity" value="0.0"/>
     <param name="maxIntensity" value="1.0"/>
 
     <!--param name="baseDirKitti" value="/home/yh/mine_ws/src/laserScan_Similarity/kitti_benchMark/singleScan/"/-->
-    <param name="baseDirKitti" value="/media/yh/yh/DataSet/kitti_benckmark_velodyne/dataset/sequences/00/velodyne/"/>
+    <param name="baseDirKitti" value="/media/yh/YH/DataSet/kitti_benchmark_velodyne/dataset/sequences/08/velodyne/"/>
     <param name="ringsCount" value="64"/>
     <param name="upStart" value="0"/>
 

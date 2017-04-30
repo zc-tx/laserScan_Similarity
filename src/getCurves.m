@@ -3,9 +3,10 @@ function [PRCurve, ROCCurve] = getCurves( SM01True, SMInput )
 %   Detailed explanation goes here
     
     count = 1;
-    for tao = 0 : 0.01 : 1 
+    for tao = 0 : 0.002 : 1 
+        tao
         tic
-        SM01Input = SM01lization(SMInput, tao, 0);
+        SM01Input = SM01lization(SMInput, tao, 1);
         
         [ TP, FP, TN, FN ] = getTFPN(SM01True, SM01Input);
         

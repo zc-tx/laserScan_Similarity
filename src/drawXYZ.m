@@ -2,7 +2,7 @@ function drawXYZ( pose )
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 
-% plot every 10'th pose
+% plot every 1'th pose
 figure; hold on; axis equal;
 l = 3; % coordinate axis length
 A = [0 0 0 1; l 0 0 1; 0 0 0 1; 0 l 0 1; 0 0 0 1; 0 0 l 1]';
